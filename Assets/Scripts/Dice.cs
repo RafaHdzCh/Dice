@@ -3,14 +3,18 @@ using UnityEngine;
 public class Dice : MonoBehaviour
 {
     private Rigidbody diceRigidbody;
-    private bool isDragging = false;
+    private bool isDragging;
     private Camera mainCamera;
     private Vector3 mouseDragOffset;
     private Vector3 initialMousePosition;
     private Vector3 lastMousePosition;
 
-    public float shakeForce = 500f; 
-    public float launchForce = 15f;
+    private float shakeForce = 800f; 
+    private float launchForce = 50f;
+    private bool isThrown;
+    private bool isStopped;
+    private float stopCheckDelay = 0.5f;
+    private float throwTime;
 
     [SerializeField] private GameObject platform;
 
@@ -33,10 +37,13 @@ public class Dice : MonoBehaviour
     void FixedUpdate()
     {
         HandleMouseInput();
+        CheckIfStopped();
     }
 
     private void HandleMouseInput()
     {
+        if (isThrown || isStopped) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -62,13 +69,15 @@ public class Dice : MonoBehaviour
                 Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
                 lastMousePosition = Input.mousePosition;
                 Vector3 rotationDelta = new Vector3(-mouseDelta.y, mouseDelta.x, 0);
-                transform.Rotate(rotationDelta * (shakeForce * Time.fixedDeltaTime * 0.1f), Space.World);
+                transform.Rotate(rotationDelta * (shakeForce * Time.fixedDeltaTime * 0.25f), Space.World);
             }
         }
 
         if (Input.GetMouseButtonUp(0) && isDragging)
         {
             isDragging = false;
+            isThrown = true; 
+            throwTime = Time.time;
 
             diceRigidbody.isKinematic = false;
 
@@ -76,7 +85,23 @@ public class Dice : MonoBehaviour
             Vector3 launchDirection = new Vector3(mouseDelta.x, Mathf.Abs(mouseDelta.y), mouseDelta.y).normalized;
 
             diceRigidbody.AddForce(launchDirection * launchForce, ForceMode.Impulse);
-            diceRigidbody.AddTorque(Random.insideUnitSphere * launchForce, ForceMode.Impulse);
+            diceRigidbody.AddTorque(Random.insideUnitSphere * (launchForce * 6), ForceMode.Impulse);
+        }
+    }
+
+    private void CheckIfStopped()
+    {
+        if (!isThrown || isStopped) return;
+
+        if (Time.time - throwTime < stopCheckDelay) return;
+
+        if (diceRigidbody.linearVelocity.magnitude < 0.1f && diceRigidbody.angularVelocity.magnitude < 0.1f)
+        {
+            isStopped = true;
+            diceRigidbody.linearVelocity = Vector3.zero;
+            diceRigidbody.angularVelocity = Vector3.zero;
+
+            // print("El dado se ha detenido.");
         }
     }
 }
