@@ -69,7 +69,7 @@ public class Dice : MonoBehaviour
                 Vector3 mouseDelta = Input.mousePosition - lastMousePosition;
                 lastMousePosition = Input.mousePosition;
                 Vector3 rotationDelta = new Vector3(-mouseDelta.y, mouseDelta.x, 0);
-                transform.Rotate(rotationDelta * (shakeForce * Time.fixedDeltaTime * 0.25f), Space.World);
+                transform.Rotate(rotationDelta * (shakeForce * Time.fixedDeltaTime * 0.1f), Space.World);
             }
         }
 
@@ -85,7 +85,7 @@ public class Dice : MonoBehaviour
             Vector3 launchDirection = new Vector3(mouseDelta.x, Mathf.Abs(mouseDelta.y), mouseDelta.y).normalized;
 
             diceRigidbody.AddForce(launchDirection * launchForce, ForceMode.Impulse);
-            diceRigidbody.AddTorque(Random.insideUnitSphere * (launchForce * 6), ForceMode.Impulse);
+            diceRigidbody.AddTorque(Random.insideUnitSphere * (launchForce * 2), ForceMode.Impulse);
         }
     }
 
