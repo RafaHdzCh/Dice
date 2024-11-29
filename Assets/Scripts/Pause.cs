@@ -7,9 +7,13 @@ public class Pause : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             pauseGameObject.SetActive(!pauseGameObject.activeInHierarchy);
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
         }
     }
 
@@ -17,10 +21,5 @@ public class Pause : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         gameObject.SetActive(false);
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
     }
 }
