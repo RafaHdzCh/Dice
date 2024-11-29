@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Dice : MonoBehaviour
 {
@@ -8,7 +8,6 @@ public class Dice : MonoBehaviour
     private Camera mainCamera;
     private Vector3 mouseDragOffset;
     private Vector3 initialMousePosition;
-    private float shakeForce = 20000f; 
     private float launchForce = 1000f;
     private bool isThrown;
     private bool isStopped;
@@ -45,11 +44,16 @@ public class Dice : MonoBehaviour
     void FixedUpdate()
     {
         HandleMouseInput();
-        CheckIfStopped();
+        
         if (diceRigidbody.useGravity && !isStopped)
         {
             diceRigidbody.AddForce(Vector3.down * 98.1f, ForceMode.Acceleration);
         }
+    }
+
+    private void Update()
+    {
+        CheckIfStopped();
     }
 
     private void HandleMouseInput()
@@ -105,9 +109,15 @@ public class Dice : MonoBehaviour
     {
         if (!isThrown || isStopped) return;
         if (Time.fixedTime - throwTime < stopCheckDelay) return;
-
-        if (Mathf.Abs(diceRigidbody.linearVelocity.x) < 0.2f &&
-            Mathf.Abs(diceRigidbody.linearVelocity.z) < 0.2f &&
+        
+        //Debug.Log("X" + (diceRigidbody.linearVelocity.x < 0.2f));
+        //Debug.Log("Y" + (diceRigidbody.linearVelocity.y));
+        //Debug.Log("Z" + (diceRigidbody.linearVelocity.z < 0.2f));
+        
+        
+        if (Mathf.Abs(diceRigidbody.linearVelocity.x) < 0.1f &&
+            Mathf.Abs(diceRigidbody.linearVelocity.z) < 0.1f &&
+            Mathf.Abs(diceRigidbody.linearVelocity.y) < 1.5f &&
             diceRigidbody.angularVelocity.magnitude < 10f)
         {
             isStopped = true;
